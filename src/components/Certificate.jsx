@@ -1,47 +1,60 @@
 /* eslint-disable react/prop-types */
-import { Page, Document, StyleSheet, Image, Text, Font } from '@react-pdf/renderer'
+import { Page, Document, StyleSheet, Image, Text, Font, View } from '@react-pdf/renderer'
 import plantilla from '../assets/plantilla.jpg'
-import Coneria from '../assets/coneria.ttf'
+import calibri from '../assets/calibri.ttf'
 
 export function Certificate ({
   data
 }) {
   Font.register({
-    family: 'Coneria',
-    src: Coneria
+    family: 'calibri',
+    src: calibri
   })
 
   const styles = StyleSheet.create({
     page: {
-      flexDirection: 'row',
-      backgroundColor: '#E4E4E4'
-    },
-    section: {
-      margin: 10,
-      padding: 10,
-      flexGrow: 1
+      flexDirection: 'column',
+      display: 'flex',
+      backgroundColor: '#fff'
     },
     name: {
-      position: 'absolute',
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      top: '53%',
-      left: '34%',
-      border: 'solid 1px',
+      top: '39%',
       fontSize: '34',
-      fontFamily: 'Coneria'
+      fontFamily: 'calibri',
+      textTransform: 'uppercase',
+      color: '#1F3864'
     },
     theme: {
-      position: 'absolute',
-      width: '100%',
+      fontSize: '24',
+      fontFamily: 'calibri',
+      textTransform: 'uppercase',
+      color: '#1F3864',
+      top: '5%'
+    },
+    date: {
+      fontSize: '18',
+      fontFamily: 'calibri',
+      textTransform: 'lowercase',
+      color: '#636363',
+      bottom: '35%'
+    },
+    contentText: {
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
-      top: '70%',
-      left: '20%',
-      border: 'solid 1px'
+      width: '100%',
+      height: '100%',
+      justifyContent: 'space-between'
+    },
+    image: {
+      position: 'absolute',
+      height: '100%',
+      width: '100%'
+    },
+    content: {
+      position: 'relative',
+      width: '100%',
+      height: '100%'
     }
   })
 
@@ -51,9 +64,14 @@ export function Certificate ({
         data &&
           data?.map((item, index) => (
             <Page key={index} size='A4' orientation='landscape' style={styles.page}>
-              <Image src={plantilla} />
-              <Text style={styles.name}>{item.nombres}</Text>
-              <Text style={styles.theme}>{item.tema}</Text>
+              <View style={styles.content}>
+                <Image src={plantilla} style={styles.image} />
+                <View style={styles.contentText}>
+                  <Text style={styles.name}>{item.nombres}</Text>
+                  <Text style={styles.theme}>{item.tema}</Text>
+                  <Text style={styles.date}>{item.fecha}</Text>
+                </View>
+              </View>
             </Page>
           ))
       }

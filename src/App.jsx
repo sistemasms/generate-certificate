@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import { useState, useRef } from 'react'
 import * as XLSX from 'xlsx'
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer'
@@ -7,6 +8,7 @@ function App () {
   const [data, setData] = useState([])
   const [excelData, setExcelData] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [messageError, setMessageError] = useState({})
 
   const refUpload = useRef(null)
 
@@ -14,7 +16,19 @@ function App () {
     setExcelData(e.target.files[0])
   }
 
+  const handleVerifyObject = ({ data }) => {
+    const result = data?.some(item => item.hasOwnProperty('nombres') && item.hasOwnProperty('tema'))
+    return result
+  }
+
   const handleGeneratePdf = () => {
+    if (!excelData) {
+      setMessageError({ emptyData: 'Seleccione un documento' })
+      setTimeout(() => {
+        setMessageError({ emptyData: '' })
+      }, 2000)
+      return
+    }
     setLoading(true)
     const reader = new FileReader()
     reader.readAsBinaryString(excelData)
@@ -24,7 +38,17 @@ function App () {
       const sheetName = workbook.SheetNames[0]
       const sheet = workbook.Sheets[sheetName]
       const parsedata = XLSX.utils.sheet_to_json(sheet)
-      setData(parsedata)
+
+      if (handleVerifyObject({ data: parsedata })) {
+        setData(parsedata)
+      } else {
+        setMessageError({ invalidObject: 'Excel inválido' })
+        setTimeout(() => {
+          setMessageError({ invalidObject: '' })
+        }, 2000)
+      }
+
+      // setData(parsedata)
     }
     setLoading(false)
   }
@@ -56,10 +80,12 @@ function App () {
             accept='.xlsx, .xls'
             onChange={handleFileUpload}
           />
+          <p className='text-red-500 text-sm'>{messageError.invalidObject}</p>
+          <p className='text-red-500 text-sm'>{messageError.emptyData}</p>
         </div>
       </div>
 
-      <section className='flex flex-col gap-5 pb-10'>
+      <section className='flex flex-col gap-5 pb-5'>
         <div className='flex gap-5'>
           <button
             className='bg-gray-50 rounded-md px-10 py-2 w-full disabled:bg-slate-300'
@@ -75,25 +101,29 @@ function App () {
             Nuevo
           </button>
         </div>
-        <PDFDownloadLink
-          document={<Certificate data={data} />}
-          fileName='exp.pdf'
-        >
-          {
-            ({ loading, url, error, blob }) => loading
-              ? <button className='bg-gray-50 rounded-md px-10 py-2 w-full'>Descargando</button>
-              : <button className='bg-gray-50 rounded-md px-10 py-2 w-full'>Descargar</button>
-          }
-        </PDFDownloadLink>
       </section>
       {
         data.length > 0 &&
-          <PDFViewer
-            width='100%'
-            height='900px'
-          >
-            <Certificate data={data} />
-          </PDFViewer>
+          <>
+            <div className='pb-5'>
+              <PDFDownloadLink
+                document={<Certificate data={data} />}
+                fileName='exp.pdf'
+              >
+                {
+                ({ loading, url, error, blob }) => loading
+                  ? <button className='bg-gray-50 rounded-md px-10 py-2 w-full'>Descargando</button>
+                  : <button className='bg-gray-50 rounded-md px-10 py-2 w-full'>Descargar</button>
+              }
+              </PDFDownloadLink>
+            </div>
+            <PDFViewer
+              width='100%'
+              height='900px'
+            >
+              <Certificate data={data} />
+            </PDFViewer>
+          </>
       }
     </section>
   )
