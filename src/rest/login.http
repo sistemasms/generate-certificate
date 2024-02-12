@@ -1,0 +1,7 @@
+POST http://24.144.89.100:3200/user_account/login HTTP/1.1
+content-type: application/json
+
+{
+    "username": "joruiz",
+    "password": "mi-password"
+}
