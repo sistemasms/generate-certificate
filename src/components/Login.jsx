@@ -21,8 +21,7 @@ const Login = ({ setUser }) => {
   const onSubmit = async (data) => {
     try {
       const response = await createRequest('user_account/login', data)
-      console.log(response)
-      document.cookie = `data=${JSON.stringify(response)}; domain=medicossalud.com; path=/; expires=${new Date(Date.now() + 1000 * 60 * 60 * 24)}`
+      document.cookie = `data=${JSON.stringify(response)}; domain=localhost; path=/; expires=${new Date(Date.now() + 1000 * 60 * 60 * 24)}`
 
       const cookie = document.cookie.split(';').find(row => row.trim().startsWith('data='))
       const dataCookie = cookie ? JSON.parse(cookie.split('=')[1]) : null
