@@ -12,7 +12,7 @@ export function Application () {
   const [messageError, setMessageError] = useState({})
 
   const handleLogout = () => {
-    document.cookie = 'data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=localhost;'
+    document.cookie = 'data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=medicossalud;'
     window.location.reload()
   }
 
